@@ -1,4 +1,5 @@
 (ns aoc.d1
+  "--- Day 1: Sonar Sweep ---"
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 
@@ -13,7 +14,7 @@
               260
               263])
 
-(def input (->> (slurp (io/resource "aoc/data1.txt"))
+(def input (->> (slurp (io/resource "aoc/d1.txt"))
                 (str/split-lines)
                 (map #(Integer/parseInt %))))
 

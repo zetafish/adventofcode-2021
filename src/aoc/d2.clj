@@ -1,4 +1,5 @@
 (ns aoc.d2
+  "--- Day 2: Dive! ---"
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 

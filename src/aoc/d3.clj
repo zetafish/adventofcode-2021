@@ -1,6 +1,8 @@
 (ns aoc.d3
+  "--- Day 3: Binary Diagnostic ---"
   (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.zip :as z]))
 
 (def example ["00100"
               "11110"
@@ -17,13 +19,13 @@
 
 (def input (str/split-lines (slurp (io/resource "aoc/d3.txt"))))
 
-(defn bits [s] (map {\0 0 \1 1} s))
-
-(defn slice [coll n]
-  (map #(nth % n) coll))
-
 (defn all-slices [report]
-  (map #(slice report %) (range (count (first report)))))
+  (loop [slices []
+         locs (map (comp z/next z/seq-zip seq) report)]
+    (if (z/end? (first locs))
+      slices
+      (recur (conj slices (map z/node locs))
+             (map z/next locs)))))
 
 (defn ->decimal [bits]
   (Integer/parseInt (str/join bits) 2))
@@ -42,22 +44,16 @@
 (* (gamma example) (epsilon example))
 (* (gamma input) (epsilon input))
 
-(defn discard-numbers [report crit n]
-  (let [f (sort-by second (frequencies (slice report n)))
-        b (cond
-            (apply = (vals f)) (case crit :most-common \1 :least-common \0)
-            (= :most-common crit) (first (last f))
-            (= :least-common crit) (first (first f)))]
-    (filter #(= b (nth % n)) report)))
-
 (defn rating [crit report]
-  (->decimal
-   (reduce (fn [report n]
-             (if (= 1 (count report))
-               report
-               (discard-numbers report crit n)))
-           report
-           (range (count (first report))))))
+  (loop [locs (map (comp z/next z/seq-zip seq) report)]
+    (if (= 1 (count locs))
+      (->decimal (str/join (z/root (first locs))))
+      (recur (let [f (sort-by second (frequencies (map z/node locs)))
+                   b (cond
+                       (apply = (vals f)) (case crit :most-common \1 :least-common \0)
+                       (= :most-common crit) (first (last f))
+                       (= :least-common crit) (first (first f)))]
+               (map z/next (filter #(= b (z/node %)) locs)))))))
 
 (def oxygen-generator-rating (partial #'rating :most-common))
 (def co2-scrubbing-rating (partial #'rating :least-common))
