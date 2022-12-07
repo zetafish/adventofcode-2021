@@ -1,8 +1,7 @@
 (ns aoc.d5
   "--- Day 5: Hydrothermal Venture ---"
-
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str]))
 
 (def example ["0,9 -> 5,9"
               "8,0 -> 0,8"
@@ -15,7 +14,7 @@
               "0,0 -> 8,8"
               "5,5 -> 8,2"])
 
-(def input (str/split-lines (slurp (io/resource "aoc/d5.txt"))))
+(def input (str/split-lines (slurp (io/resource "d5.txt"))))
 
 (defn ->int [s] (Integer/parseInt s))
 
@@ -50,12 +49,12 @@
     (diagonal? a b)   (map vector (uni-vals x1 x2) (uni-vals y1 y2))))
 
 (defn overlap [pf lines]
- (->>
-  lines
-  (reduce (fn [acc line] (concat acc (pf line))) [])
-  frequencies
-  (filter #(>= (second %) 2))
-  count))
+  (->>
+   lines
+   (reduce (fn [acc line] (concat acc (pf line))) [])
+   frequencies
+   (filter #(>= (second %) 2))
+   count))
 
 ;; part 1
 (overlap line-points (parse example))
